@@ -1,0 +1,2 @@
+This folder contains the important source code for the game engine. This is for reference and learning purposes
+and is not used directly with the game. The game uses a tarball of the engine as the library.
