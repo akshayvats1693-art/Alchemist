@@ -7,7 +7,7 @@ mountGame({
         new InputSystemContext({
             Flap: [
                 { type: 'down', key: 'Space' },
-                { type: 'down', key: 'PointerMain' }
+                { type: 'down', button: 0 } // Left mouse / Touch
             ]
         })
     ]

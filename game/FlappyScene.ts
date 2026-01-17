@@ -3,11 +3,12 @@ import {
     CameraActor, 
     RenderSystem, 
     PhysicsSystem, 
-    Vector3, 
-    BoxActor 
+    Vector3,
+    ActionBinder
 } from '@swarnos/engine';
 import { Bird } from './actors/Bird';
 import { Pipe } from './actors/Pipe';
+import { BoxActor } from './actors/BoxActor';
 
 export class FlappyScene extends Scene {
     private bird: Bird | null = null;
@@ -15,6 +16,7 @@ export class FlappyScene extends Scene {
     private pipeSpawnInterval: number = 1.8;
     private score: number = 0;
     private isGameOver: boolean = false;
+    private actionBinder: ActionBinder;
 
     constructor() {
         super();
@@ -34,11 +36,14 @@ export class FlappyScene extends Scene {
         renderSystem.setMainCamera(cameraActor.cameraComponent);
 
         // 3. Ground
-        const ground = new BoxActor(0, -620, 1200, 100, 0x8B4513, 1.0);
+        const ground = new BoxActor(0, -620, 1200, 100, 0x8B4513, 0, 1.0);
         ground.name = 'Ground';
         this.addActor(ground);
 
-        // 4. Initial Game State
+        // 4. Input
+        this.actionBinder = this.createActionBinder({ sourceId: 'Keyboard' });
+
+        // 5. Initial Game State
         this.resetGame();
     }
 
@@ -86,10 +91,8 @@ export class FlappyScene extends Scene {
     public override tick(dt: number): void {
         super.tick(dt);
 
-        const input = this.engine.input;
-
         if (this.isGameOver) {
-            if (input.getActionDown('Flap')) {
+            if (this.actionBinder.isActionJustPressed('Flap')) {
                 this.resetGame();
             }
             return;
@@ -102,7 +105,7 @@ export class FlappyScene extends Scene {
         }
 
         // Handle Input
-        if (input.getActionDown('Flap')) {
+        if (this.actionBinder.isActionJustPressed('Flap')) {
             this.bird?.flap();
         }
 
@@ -119,8 +122,7 @@ export class FlappyScene extends Scene {
                 if (a.transform.position.x < this.bird.transform.position.x) {
                     a.passed = true;
                     // Since pipes come in pairs (top/bottom), we only count every 2 pipes as 1 point
-                    // Or we just flag both and count once. 
-                    // Let's count every pair.
+                    // Actually we can just find the other pipe in the pair.
                     const otherPipesAtSameX = this.actors.filter(p => p instanceof Pipe && p !== a && Math.abs(p.transform.position.x - a.transform.position.x) < 1);
                     otherPipesAtSameX.forEach(p => (p as Pipe).passed = true);
                     
