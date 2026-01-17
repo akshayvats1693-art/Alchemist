@@ -1,13 +1,14 @@
 import { InputSystemContext, mountGame } from '@swarnos/engine';
-import { EmptyScene } from './EmptyScene';
+import { FlappyScene } from './FlappyScene';
 
 mountGame({
-    sceneFactory: () => new EmptyScene(),
+    sceneFactory: () => new FlappyScene(),
     contexts: [
         new InputSystemContext({
-            // Define your input mappings here.
-            // Example:
-            // Jump: [{ type: 'down', key: 'Space' }]
+            Flap: [
+                { type: 'down', key: 'Space' },
+                { type: 'down', key: 'PointerMain' }
+            ]
         })
     ]
 });
